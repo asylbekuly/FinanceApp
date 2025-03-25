@@ -115,13 +115,14 @@ class BalanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.blue[100],
       margin: EdgeInsets.all(16.0),
       child: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
             Text('Current Balance', style: TextStyle(fontSize: 18.0)),
-            Text('\$${balance.toStringAsFixed(2)}',
+            Text('${balance.toStringAsFixed(2)} ₸',
                 style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
             Divider(),
             Row(
@@ -130,14 +131,14 @@ class BalanceCard extends StatelessWidget {
                 Column(
                   children: [
                     Text('Income', style: TextStyle(fontSize: 16.0, color: Colors.green)),
-                    Text('\$${income.toStringAsFixed(2)}',
+                    Text('${income.toStringAsFixed(2)} ₸',
                         style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.green)),
                   ],
                 ),
                 Column(
                   children: [
                     Text('Expenses', style: TextStyle(fontSize: 16.0, color: Colors.red)),
-                    Text('\$${expense.toStringAsFixed(2)}',
+                    Text('${expense.toStringAsFixed(2)} ₸',
                         style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.red)),
                   ],
                 ),
@@ -169,7 +170,7 @@ class TransactionList extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                '\$${transaction.amount.toStringAsFixed(2)}',
+                '${transaction.amount.toStringAsFixed(2)} ₸',
                 style: TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.bold,
