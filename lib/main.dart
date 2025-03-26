@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 void main() {
   runApp(FinanceTrackerApp());
 }
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   double totalIncome = 0.0;
   double totalExpense = 0.0;
   List<Transaction> transactions = [];
-
+  
   void _addTransaction(Transaction transaction) {
     setState(() {
       transactions.add(transaction);
@@ -164,6 +165,7 @@ class TransactionList extends StatelessWidget {
       itemBuilder: (context, index) {
         final transaction = transactions[index];
         return ListTile(
+          leading: Image.asset(transaction.imageAsset, width: 40, height: 40),
           title: Text(transaction.title),
           subtitle: Text(transaction.date.toString()),
           trailing: Row(
@@ -189,12 +191,14 @@ class TransactionList extends StatelessWidget {
   }
 }
 
+
 class Transaction {
   final String title;
   final double amount;
   final DateTime date;
+  final String imageAsset;
 
-  Transaction({required this.title, required this.amount, required this.date});
+  Transaction({required this.title, required this.amount, required this.date,required this.imageAsset});
 }
 
 class AddTransactionScreen extends StatefulWidget {
@@ -208,23 +212,25 @@ class AddTransactionScreen extends StatefulWidget {
 
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
   late TextEditingController titleController;
-  late TextEditingController amountController;
+  double amount = 0.0;
+  String selectedImage = 'assets/receipt.jpg';
 
   @override
   void initState() {
     super.initState();
     titleController = TextEditingController(text: widget.transaction?.title ?? '');
-    amountController = TextEditingController(text: widget.transaction?.amount.toString() ?? '');
+    amount = widget.transaction?.amount ?? 0.0;
+    selectedImage = widget.transaction?.imageAsset ?? 'assets/receipt.jpg';
   }
 
   void _submitTransaction() {
     final title = titleController.text;
-    final amount = double.tryParse(amountController.text) ?? 0;
-    if (title.isNotEmpty && amount != 0) {
+    if (title.isNotEmpty) {
       final newTransaction = Transaction(
         title: title,
         amount: amount,
         date: DateTime.now(),
+        imageAsset: selectedImage,
       );
       Navigator.pop(context, newTransaction);
     }
@@ -233,27 +239,66 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.transaction == null ? 'Add Transaction' : 'Edit Transaction')),
+      appBar: AppBar(
+        title: Text(widget.transaction == null ? 'Добавить транзакцию' : 'Редактировать транзакцию'),
+      ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
               controller: titleController,
-              decoration: InputDecoration(labelText: 'Title'),
+              decoration: InputDecoration(labelText: 'Название'),
             ),
-            TextField(
-              controller: amountController,
-              decoration: InputDecoration(labelText: 'Amount'),
-              keyboardType: TextInputType.number,
+            SizedBox(height: 20),
+            Text('Сумма: ${amount.toStringAsFixed(2)} ₸'),
+            Slider(
+              value: amount,
+              min: -100000,
+              max: 100000,
+              divisions: 200,
+              label: amount.toStringAsFixed(2),
+              onChanged: (value) {
+                setState(() {
+                  amount = value;
+                });
+              },
+            ),
+            SizedBox(height: 20),
+            Text('Выберите категорию:'),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildImageOption('assets/receipt.jpg'),
+                _buildImageOption('assets/food.png'),
+                _buildImageOption('assets/transport.png'),
+              ],
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: _submitTransaction,
-              child: Text(widget.transaction == null ? 'Add' : 'Save Changes'),
+              child: Text(widget.transaction == null ? 'Добавить' : 'Сохранить изменения'),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildImageOption(String imagePath) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedImage = imagePath;
+        });
+      },
+      child: Column(
+        children: [
+          Image.asset(imagePath, width: 80, height: 80),
+          if (selectedImage == imagePath) Icon(Icons.check_circle, color: Colors.blue),
+        ],
       ),
     );
   }
